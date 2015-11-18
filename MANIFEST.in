@@ -1,1 +1,1 @@
-recursive-include hello/web *
+recursive-include openbci/web *

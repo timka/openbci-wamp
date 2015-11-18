@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+   <body>
+      <h1>Hello WAMP</h1>
+      <p>Open JavaScript console to watch output.</p>
+      <script>AUTOBAHN_DEBUG = true;</script>
+      <script src="http://autobahn.s3.amazonaws.com/autobahnjs/latest/autobahn.min.jgz"></script>
+
+      <script>
+         // the URL of the WAMP Router (Crossbar.io)
+         //
+         var wsuri;
+         if (document.location.origin == "file://") {
+            wsuri = "ws://127.0.0.1:8080/ws";
+
+         } else {
+            wsuri = (document.location.protocol === "http:" ? "ws:" : "wss:") + "//" +
+                        document.location.host + "/ws";
+         }
+
+         // the WAMP connection to the Router
+         //
+         var connection = new autobahn.Connection({
+            url: wsuri,
+            realm: "realm1"
+         });
+
+         // fired when connection is established and session attached
+         //
+         connection.onopen = function (session, details) {
+
+            console.log("Connected");
+
+            // SUBSCRIBE to a topic and receive events
+            //
+            function on_chunk (args) {
+               var chunk = args[0];
+               console.log("on_chunk", chunk);
+            }
+            session.subscribe('com.example.on_chunk', on_chunk).then(
+               function (sub) {
+                  console.log('subscribed to on_chunk');
+               },
+               function (err) {
+                  console.log('failed to subscribe to on_chunk', err);
+               });
+
+            function on_ready () {
+               console.log('ready')
+               session.call('com.example.start_streaming').then(
+                  function (res) {
+                     console.log("start_streaming() result:", res);
+                  },
+                  function (err) {
+                     console.log("start_streaming() error:", err);
+                  });
+            }
+            session.subscribe('com.example.ready', on_ready).then(
+               function (sub) {
+                  console.log('subscribed to ready')
+               },
+               function (err) {
+                  console.log('failed to subscribe to ready')
+               });
+
+            // var t1 = setTimeout(function() {
+            //    session.call('com.example.init').then(
+            //       function (res) {
+            //          console.log("init() result:", res);
+            //       },
+            //       function (err) {
+            //          console.log("init() error:", err);
+            //       });
+            //    clearTimeout(t1);
+            // }, 5000);
+
+         }
+
+         // fired when connection was lost (or could not be established)
+         //
+         connection.onclose = function (reason, details) {
+            console.log("Connection lost: " + reason);
+         }
+
+
+         // now actually open the connection
+         //
+         connection.open();
+
+      </script>
+   </body>
+</html>

@@ -37,7 +37,7 @@
                "paths": {
                   "/": {
                      "type": "static",
-                     "directory": "../hello/web"
+                     "directory": "../openbci/web"
                   },
                   "ws": {
                      "type": "websocket"
@@ -54,7 +54,7 @@
          "components": [
             {
                "type": "class",
-               "classname": "hello.hello.AppSession",
+               "classname": "openbci.openbci.OpenBCIComponent",
                "realm": "realm1",
                "transport": {
                   "type": "websocket",
@@ -64,6 +64,9 @@
                      "port": 8080
                   },
                   "url": "ws://127.0.0.1:8080/ws"
+               },
+               "extra": {
+                  "port": "/dev/tty.usbserial-DN00964I"
                }
             }
          ]
